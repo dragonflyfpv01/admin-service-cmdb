@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15-alpine   # nhẹ, chạy tốt trên M1
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"   # để có thể truy cập DB từ bên ngoài host
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    image: template-backend-go   # image Go bạn build
+    container_name: backend_go
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres      # tên service postgres (Docker DNS tự resolve)
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: admin123
+      DB_NAME: mydb
+    ports:
+      - "3000:3000"   # publish cổng backend ra ngoài
+    # command: ["./main"]   # nếu cần override CMD trong Dockerfile
+
+volumes:
+  pgdata:
