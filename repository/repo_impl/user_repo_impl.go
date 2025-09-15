@@ -5,13 +5,14 @@ import (
 	"database/sql"
 	"time"
 
+	"sllpklls/admin-service/db"
+	"sllpklls/admin-service/errors"
+	"sllpklls/admin-service/model"
+	"sllpklls/admin-service/model/req"
+	"sllpklls/admin-service/repository"
+
 	"github.com/labstack/gommon/log"
 	"github.com/lib/pq"
-	"github.com/sllpklls/template-backend-go/db"
-	"github.com/sllpklls/template-backend-go/errors"
-	"github.com/sllpklls/template-backend-go/model"
-	"github.com/sllpklls/template-backend-go/model/req"
-	"github.com/sllpklls/template-backend-go/repository"
 )
 
 type UserRepoImpl struct {
@@ -25,7 +26,7 @@ func NewUserRepo(sql *db.Sql) repository.UserRepo {
 }
 func (u UserRepoImpl) SaveUser(context context.Context, user model.User) (model.User, error) {
 	statement := `
-		INSERT INTO users(user_id, email, password, role, full_name, created_at, updated_at)
+		INSERT INTO users_admin(user_id, email, password, role, full_name, created_at, updated_at)
 		VALUES(:user_id, :email, :password, :role, :full_name, :created_at, :updated_at)
 	`
 	user.CreatedAt = time.Now()
@@ -43,7 +44,7 @@ func (u UserRepoImpl) SaveUser(context context.Context, user model.User) (model.
 }
 func (u *UserRepoImpl) CheckLogin(context context.Context, loginReq req.ReqSignIn) (model.User, error) {
 	var user = model.User{}
-	statement := `SELECT * FROM users WHERE email =$1`
+	statement := `SELECT * FROM users_admin WHERE email =$1`
 	err := u.sql.Db.GetContext(context, &user, statement, loginReq.Email)
 	if err != nil {
 		if err == sql.ErrNoRows {

@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
-	"github.com/sllpklls/template-backend-go/model"
-	"github.com/sllpklls/template-backend-go/model/req"
+	"sllpklls/admin-service/model"
+	"sllpklls/admin-service/model/req"
 )
 
 type UserRepo interface {

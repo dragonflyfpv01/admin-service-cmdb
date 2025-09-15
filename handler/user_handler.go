@@ -3,14 +3,15 @@ package handler
 import (
 	"net/http"
 
+	"sllpklls/admin-service/model"
+	"sllpklls/admin-service/model/req"
+	"sllpklls/admin-service/repository"
+	"sllpklls/admin-service/security"
+
 	validator "github.com/go-playground/validator/v10"
 	uuid "github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
-	"github.com/sllpklls/template-backend-go/model"
-	"github.com/sllpklls/template-backend-go/model/req"
-	"github.com/sllpklls/template-backend-go/repository"
-	"github.com/sllpklls/template-backend-go/security"
 )
 
 type UserHandler struct {

@@ -1,5 +1,5 @@
 -- +migrate Up
-CREATE TABLE "users" (
+CREATE TABLE "users_admin" (
   "user_id" text PRIMARY KEY,
   "full_name" text,
   "email" text UNIQUE,

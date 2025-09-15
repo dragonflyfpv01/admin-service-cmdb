@@ -4,11 +4,12 @@ import (
 	"os"
 	"strconv"
 
+	"sllpklls/admin-service/db"
+	"sllpklls/admin-service/handler"
+	"sllpklls/admin-service/repository/repo_impl"
+	"sllpklls/admin-service/router"
+
 	"github.com/labstack/echo/v4"
-	"github.com/sllpklls/template-backend-go/db"
-	"github.com/sllpklls/template-backend-go/handler"
-	"github.com/sllpklls/template-backend-go/repository/repo_impl"
-	"github.com/sllpklls/template-backend-go/router"
 )
 
 func main() {

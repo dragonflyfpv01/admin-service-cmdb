@@ -1,9 +1,10 @@
 package router
 
 import (
+	"sllpklls/admin-service/handler"
+	"sllpklls/admin-service/middleware"
+
 	"github.com/labstack/echo/v4"
-	"github.com/sllpklls/template-backend-go/handler"
-	"github.com/sllpklls/template-backend-go/middleware"
 )
 
 type API struct {

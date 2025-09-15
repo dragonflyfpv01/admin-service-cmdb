@@ -3,8 +3,9 @@ package security
 import (
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/sllpklls/template-backend-go/model"
+	"sllpklls/admin-service/model"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 const SECRET_KEY = "hoangthaifc01"
@@ -14,8 +15,8 @@ func GenToken(user model.User) (string, error) {
 	claims := &model.JwtCustomClaims{
 		UserId: user.UserId,
 		Role:   user.Role,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -27,7 +28,7 @@ func GenToken(user model.User) (string, error) {
 }
 func validateToken(tokenString string) (*model.JwtCustomClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &model.JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return SECRET_KEY, nil
+		return []byte(SECRET_KEY), nil
 	})
 	if err != nil || !token.Valid {
 		return nil, err
