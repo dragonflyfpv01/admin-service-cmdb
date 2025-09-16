@@ -8,4 +8,5 @@ import (
 
 type InfraComponentRepo interface {
 	GetAllInfraComponents(ctx context.Context) ([]model.InfraComponent, error)
+	GetInfraComponentsPaginated(ctx context.Context, pagination model.PaginationRequest) ([]model.InfraComponent, int64, error)
 }

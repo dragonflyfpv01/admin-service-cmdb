@@ -36,8 +36,22 @@ func (i *InfraComponentHandler) GetInfraComponents(c echo.Context) error {
 		})
 	}
 
-	// Lấy danh sách infra components
-	components, err := i.InfraComponentRepo.GetAllInfraComponents(c.Request().Context())
+	// Parse pagination parameters từ query string
+	var pagination model.PaginationRequest
+	if err := c.Bind(&pagination); err != nil {
+		log.Error("Error parsing pagination parameters:", err.Error())
+		return c.JSON(http.StatusBadRequest, model.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid pagination parameters: " + err.Error(),
+			Data:       nil,
+		})
+	}
+
+	// Validate và set default values
+	pagination.Validate()
+
+	// Lấy danh sách infra components với phân trang
+	components, totalCount, err := i.InfraComponentRepo.GetInfraComponentsPaginated(c.Request().Context(), pagination)
 	if err != nil {
 		log.Error(err.Error())
 		return c.JSON(http.StatusInternalServerError, model.Response{
@@ -47,9 +61,16 @@ func (i *InfraComponentHandler) GetInfraComponents(c echo.Context) error {
 		})
 	}
 
+	// Tạo response với thông tin phân trang
+	paginationResponse := model.BuildPaginationResponse(pagination, totalCount)
+	paginatedData := model.PaginatedResponse{
+		Data:       components,
+		Pagination: paginationResponse,
+	}
+
 	return c.JSON(http.StatusOK, model.Response{
 		StatusCode: http.StatusOK,
 		Message:    "Get infra components successfully",
-		Data:       components,
+		Data:       paginatedData,
 	})
 }
