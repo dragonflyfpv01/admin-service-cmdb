@@ -1,11 +1,13 @@
 package security
 
 import (
+	"errors"
 	"time"
 
 	"sllpklls/admin-service/model"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/labstack/echo/v4"
 )
 
 const SECRET_KEY = "hoangthaifc01"
@@ -38,5 +40,29 @@ func validateToken(tokenString string) (*model.JwtCustomClaims, error) {
 		return nil, err
 	}
 	return claims, nil
+}
 
+// GetClaimsFromContext lấy JWT claims từ context của Echo
+func GetClaimsFromContext(c echo.Context) (*model.JwtCustomClaims, error) {
+	user := c.Get("user")
+	if user == nil {
+		return nil, errors.New("user not found in context")
+	}
+
+	token, ok := user.(*jwt.Token)
+	if !ok {
+		return nil, errors.New("invalid token format")
+	}
+
+	claims, ok := token.Claims.(*model.JwtCustomClaims)
+	if !ok {
+		return nil, errors.New("invalid claims format")
+	}
+
+	return claims, nil
+}
+
+// IsAdmin kiểm tra xem user có role admin hay không
+func IsAdmin(claims *model.JwtCustomClaims) bool {
+	return claims.Role == model.ADMIN.String()
 }

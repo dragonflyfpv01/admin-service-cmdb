@@ -39,6 +39,9 @@ func main() {
 	userHandler := handler.UserHandler{
 		UserRepo: repo_impl.NewUserRepo(sql),
 	}
+	infraComponentHandler := handler.InfraComponentHandler{
+		InfraComponentRepo: repo_impl.NewInfraComponentRepo(sql),
+	}
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Response().Header().Set("Access-Control-Allow-Origin", "*")
@@ -53,8 +56,9 @@ func main() {
 		}
 	})
 	api := router.API{
-		Echo:        e,
-		UserHandler: userHandler,
+		Echo:                  e,
+		UserHandler:           userHandler,
+		InfraComponentHandler: infraComponentHandler,
 	}
 	api.SetupRouter()
 	e.Logger.Fatal(e.Start(":3000"))

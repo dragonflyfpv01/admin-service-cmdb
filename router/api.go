@@ -8,8 +8,9 @@ import (
 )
 
 type API struct {
-	Echo        *echo.Echo
-	UserHandler handler.UserHandler
+	Echo                  *echo.Echo
+	UserHandler           handler.UserHandler
+	InfraComponentHandler handler.InfraComponentHandler
 }
 
 func (api *API) SetupRouter() {
@@ -19,4 +20,7 @@ func (api *API) SetupRouter() {
 
 	// Route yêu cầu xác thực JWT
 	api.Echo.GET("/admin/profile", api.UserHandler.Profile, middleware.JWTMiddleware())
+
+	// Route cho infra components - chỉ admin mới truy cập được
+	api.Echo.GET("/admin/infra-components", api.InfraComponentHandler.GetInfraComponents, middleware.JWTMiddleware())
 }

@@ -40,3 +40,17 @@ curl -X POST http://localhost:3000/admin/sign-in \
 # 3 Lấy profile (thay <token> bằng JWT nhận được)
 curl -X GET http://localhost:3000/admin/profile \
   -H "Authorization: Bearer <token>"
+
+========infra-components======
+1. API để lấy danh sách Infra Components
+Endpoint: GET /admin/infra-components
+
+# Bước 1: Đăng nhập để lấy token (với user có role admin)
+curl -X POST http://localhost:3000/admin/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"admin123"}'
+
+# Bước 2: Sử dụng token để gọi API lấy infra components
+curl -X GET http://localhost:3000/admin/infra-components \
+  -H "Authorization: Bearer <JWT_TOKEN_FROM_STEP_1>" \
+  -H "Content-Type: application/json"
