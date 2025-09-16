@@ -14,9 +14,9 @@ type API struct {
 
 func (api *API) SetupRouter() {
 	// Route không yêu cầu xác thực JWT
-	api.Echo.POST("/user/sign-in", api.UserHandler.HandlerSignIn)
-	api.Echo.POST("/user/sign-up", api.UserHandler.HandlerSignUp)
+	api.Echo.POST("/admin/login", api.UserHandler.HandlerLogin)
+	api.Echo.POST("/admin/signup", api.UserHandler.HandlerSignUp)
 
 	// Route yêu cầu xác thực JWT
-	api.Echo.GET("/user/profile", api.UserHandler.Profile, middleware.JWTMiddleware())
+	api.Echo.GET("/admin/profile", api.UserHandler.Profile, middleware.JWTMiddleware())
 }

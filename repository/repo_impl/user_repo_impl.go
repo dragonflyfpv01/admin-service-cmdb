@@ -42,7 +42,7 @@ func (u UserRepoImpl) SaveUser(context context.Context, user model.User) (model.
 	}
 	return user, nil
 }
-func (u *UserRepoImpl) CheckLogin(context context.Context, loginReq req.ReqSignIn) (model.User, error) {
+func (u *UserRepoImpl) CheckLogin(context context.Context, loginReq req.ReqLogin) (model.User, error) {
 	var user = model.User{}
 	statement := `SELECT * FROM users_admin WHERE email =$1`
 	err := u.sql.Db.GetContext(context, &user, statement, loginReq.Email)

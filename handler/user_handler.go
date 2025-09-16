@@ -18,8 +18,8 @@ type UserHandler struct {
 	UserRepo repository.UserRepo
 }
 
-func (u *UserHandler) HandlerSignIn(c echo.Context) error {
-	req := req.ReqSignIn{}
+func (u *UserHandler) HandlerLogin(c echo.Context) error {
+	req := req.ReqLogin{}
 	if err := c.Bind(&req); err != nil {
 		log.Error(err.Error())
 		return c.JSON(http.StatusBadRequest, model.Response{
@@ -139,5 +139,10 @@ func (u *UserHandler) HandlerSignUp(c echo.Context) error {
 	})
 }
 func (u *UserHandler) Profile(c echo.Context) error {
-	return nil
+	return c.JSON(http.StatusOK, model.Response{
+		StatusCode: http.StatusOK,
+		Message:    "jwt ok",
+		Data:       nil,
+	})
+
 }
