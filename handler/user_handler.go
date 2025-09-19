@@ -144,5 +144,44 @@ func (u *UserHandler) Profile(c echo.Context) error {
 		Message:    "jwt ok",
 		Data:       nil,
 	})
+}
 
+// GetAllUsers lấy danh sách tất cả users - chỉ admin mới có quyền
+func (u *UserHandler) GetAllUsers(c echo.Context) error {
+	// Lấy JWT claims từ context
+	claims, err := security.GetClaimsFromContext(c)
+	if err != nil {
+		log.Error(err.Error())
+		return c.JSON(http.StatusUnauthorized, model.Response{
+			StatusCode: http.StatusUnauthorized,
+			Message:    "Unauthorized: " + err.Error(),
+			Data:       nil,
+		})
+	}
+
+	// Kiểm tra role admin
+	if !security.IsAdmin(claims) {
+		return c.JSON(http.StatusForbidden, model.Response{
+			StatusCode: http.StatusForbidden,
+			Message:    "Forbidden: Only admin can access this resource",
+			Data:       nil,
+		})
+	}
+
+	// Lấy danh sách users từ database
+	users, err := u.UserRepo.GetAllUsers(c.Request().Context())
+	if err != nil {
+		log.Error("Error fetching users: ", err.Error())
+		return c.JSON(http.StatusInternalServerError, model.Response{
+			StatusCode: http.StatusInternalServerError,
+			Message:    "Failed to fetch users: " + err.Error(),
+			Data:       nil,
+		})
+	}
+
+	return c.JSON(http.StatusOK, model.Response{
+		StatusCode: http.StatusOK,
+		Message:    "Get users successfully",
+		Data:       users,
+	})
 }

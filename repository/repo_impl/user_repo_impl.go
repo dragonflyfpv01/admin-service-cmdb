@@ -55,3 +55,16 @@ func (u *UserRepoImpl) CheckLogin(context context.Context, loginReq req.ReqLogin
 	}
 	return user, nil
 }
+
+func (u *UserRepoImpl) GetAllUsers(context context.Context) ([]model.UserList, error) {
+	var users []model.UserList
+	statement := `SELECT id, username, user_id, role FROM users ORDER BY id`
+
+	err := u.sql.Db.SelectContext(context, &users, statement)
+	if err != nil {
+		log.Error("Error fetching users: ", err.Error())
+		return nil, err
+	}
+
+	return users, nil
+}
