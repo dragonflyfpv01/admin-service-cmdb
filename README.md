@@ -136,3 +136,66 @@ curl -X PUT "http://localhost:3000/admin/infra-components" \
     "ci_owners": "Updated Admin",
     "im_cm": "CM015"
   }'
+
+
+# 6. api.Echo.POST("/admin/infra-components")
+API Tạo Mới Infra-Components
+Method: POST
+URL: /admin/infra-components
+Authentication: JWT token required
+
+body:
+{
+    "hostname": "server01.example.com",
+    "dns": "server01.dns.example.com", 
+    "description": "Web server for production",
+    "public_internet": "Yes",
+    "class": "Production",
+    "ipaddress": "192.168.1.100",
+    "subnet": "192.168.1.0/24",
+    "site": "Data Center A",
+    "it_component_type": "Server",
+    "request_type": "New",
+    "appid": "APP001",
+    "vlan": "VLAN100",
+    "app_name": "Web Application",
+    "app_owner": "IT Team",
+    "level": "Critical",
+    "ci_owners": "Infrastructure Team",
+    "im_cm": "ServiceNow"
+}
+
+respon: 
+{
+    "status_code": 201,
+    "message": "Create infra component successfully",
+    "data": {
+        "id": 15,
+        "hostname": "server01.example.com",
+        "dns": "server01.dns.example.com",
+        "description": "Web server for production",
+        "public_internet": "Yes",
+        "class": "Production",
+        "ipaddress": "192.168.1.100",
+        "subnet": "192.168.1.0/24", 
+        "site": "Data Center A",
+        "it_component_type": "Server",
+        "request_type": "New",
+        "appid": "APP001",
+        "vlan": "VLAN100",
+        "app_name": "Web Application",
+        "app_owner": "IT Team",
+        "level": "Critical",
+        "ci_owners": "Infrastructure Team",
+        "im_cm": "ServiceNow",
+        "status": "Đang chờ",
+        "created_at": "2025-09-19 15:30:45",
+        "create_by": "admin@example.com"
+    }
+}
+
+
+Error Responses:
+401 Unauthorized: JWT token không hợp lệ
+400 Bad Request: Validation errors
+500 Internal Server Error: Database errors hoặc user không tồn tại

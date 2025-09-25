@@ -12,4 +12,5 @@ type InfraComponentRepo interface {
 	GetInfraComponentsByStatus(ctx context.Context, status string) ([]model.InfraComponent, error)
 	UpdateInfraComponentStatus(ctx context.Context, id int, hostname string, newStatus string) error
 	UpdateInfraComponent(ctx context.Context, id int, component model.InfraComponent) error
+	CreateInfraComponent(ctx context.Context, component model.InfraComponent) (*model.InfraComponent, error)
 }

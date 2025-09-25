@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"strconv"
 
@@ -10,15 +11,20 @@ import (
 	"sllpklls/admin-service/router"
 
 	"github.com/labstack/echo/v4"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	// lấy env, nếu không có thì dùng default
-	host := getEnv("DB_HOST", "localhost")
-	portStr := getEnv("DB_PORT", "5432")
-	user := getEnv("DB_USER", "admin")
-	pass := getEnv("DB_PASSWORD", "admin123")
-	dbName := getEnv("DB_NAME", "mydb")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	host := os.Getenv("DB_HOST")
+	portStr := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
 
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
@@ -36,11 +42,13 @@ func main() {
 	defer sql.Close()
 
 	e := echo.New()
+	userRepo := repo_impl.NewUserRepo(sql)
 	userHandler := handler.UserHandler{
-		UserRepo: repo_impl.NewUserRepo(sql),
+		UserRepo: userRepo,
 	}
 	infraComponentHandler := handler.InfraComponentHandler{
 		InfraComponentRepo: repo_impl.NewInfraComponentRepo(sql),
+		UserRepo:           userRepo,
 	}
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-cmdb-backend
+  labels:
+    app: admin-cmdb-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: admin-cmdb-backend
+  template:
+    metadata:
+      labels:
+        app: admin-cmdb-backend
+    spec:
+      containers:
+        - name: admin-cmdb-backend
+          image: hoangnghiathai01/admin-cmdb-backend:v1.1
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: admin-cmdb-backend-config
+            - secretRef:
+                name: admin-cmdb-backend-secret
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+          livenessProbe:                # kiểm tra xem container còn "sống" không
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10     # đợi 10s sau khi start rồi mới check
+            periodSeconds: 15           # check mỗi 15s
+          readinessProbe:               # kiểm tra container đã sẵn sàng nhận request chưa
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10

@@ -16,6 +16,7 @@ import (
 
 type InfraComponentHandler struct {
 	InfraComponentRepo repository.InfraComponentRepo
+	UserRepo           repository.UserRepo
 }
 
 func (i *InfraComponentHandler) GetInfraComponents(c echo.Context) error {
@@ -310,5 +311,99 @@ func (i *InfraComponentHandler) UpdateInfraComponent(c echo.Context) error {
 			"hostname":   req.Hostname,
 			"updated_at": component.CreatedAt,
 		},
+	})
+}
+
+// CreateInfraComponent tạo mới infra component
+func (i *InfraComponentHandler) CreateInfraComponent(c echo.Context) error {
+	// Lấy JWT claims từ context
+	claims, err := security.GetClaimsFromContext(c)
+	if err != nil {
+		log.Error(err.Error())
+		return c.JSON(http.StatusUnauthorized, model.Response{
+			StatusCode: http.StatusUnauthorized,
+			Message:    "Unauthorized: " + err.Error(),
+			Data:       nil,
+		})
+	}
+
+	// Parse request body
+	var req req.ReqCreateInfraComponent
+	if err := c.Bind(&req); err != nil {
+		log.Error("Error parsing request:", err.Error())
+		return c.JSON(http.StatusBadRequest, model.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid request format: " + err.Error(),
+			Data:       nil,
+		})
+	}
+
+	// Validate request
+	validate := validator.New()
+	if err := validate.Struct(req); err != nil {
+		log.Error("Validation error:", err.Error())
+		return c.JSON(http.StatusBadRequest, model.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Validation error: " + err.Error(),
+			Data:       nil,
+		})
+	}
+
+	// Lấy thông tin user để có email từ UserId trong JWT claims
+	user, err := i.UserRepo.GetUserByUserId(c.Request().Context(), claims.UserId)
+	if err != nil {
+		log.Error("Error fetching user:", err.Error())
+		return c.JSON(http.StatusInternalServerError, model.Response{
+			StatusCode: http.StatusInternalServerError,
+			Message:    "Failed to get user information: " + err.Error(),
+			Data:       nil,
+		})
+	}
+
+	// Tạo InfraComponent từ request và JWT claims
+	component := model.InfraComponent{
+		Hostname:        req.Hostname,
+		DNS:             req.DNS,
+		Description:     req.Description,
+		PublicInternet:  req.PublicInternet,
+		Class:           req.Class,
+		IPAddress:       req.IPAddress,
+		Subnet:          req.Subnet,
+		Site:            req.Site,
+		ITComponentType: req.ITComponentType,
+		RequestType:     req.RequestType,
+		AppID:           req.AppID,
+		VLAN:            req.VLAN,
+		AppName:         req.AppName,
+		AppOwner:        req.AppOwner,
+		Level:           req.Level,
+		CIOwners:        req.CIOwners,
+		IMCM:            req.IMCM,
+		Status:          "Đang chờ",                               // Status = "Đang chờ" như yêu cầu
+		CreatedAt:       time.Now().Format("2006-01-02 15:04:05"), // Lấy ngày giờ tạo
+		CreateBy:        user.Email,                               // Email từ database thông qua UserId
+	}
+	if !security.IsAdmin(claims) {
+		return c.JSON(http.StatusForbidden, model.Response{
+			StatusCode: http.StatusForbidden,
+			Message:    "Forbidden: Only admin can access this resource",
+			Data:       nil,
+		})
+	}
+	// Tạo infra component trong database
+	createdComponent, err := i.InfraComponentRepo.CreateInfraComponent(c.Request().Context(), component)
+	if err != nil {
+		log.Error("Error creating infra component:", err.Error())
+		return c.JSON(http.StatusInternalServerError, model.Response{
+			StatusCode: http.StatusInternalServerError,
+			Message:    "Failed to create infra component: " + err.Error(),
+			Data:       nil,
+		})
+	}
+
+	return c.JSON(http.StatusCreated, model.Response{
+		StatusCode: http.StatusCreated,
+		Message:    "Create infra component successfully",
+		Data:       createdComponent,
 	})
 }

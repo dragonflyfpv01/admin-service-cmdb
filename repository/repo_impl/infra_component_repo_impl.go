@@ -157,3 +157,38 @@ func (i *InfraComponentRepoImpl) UpdateInfraComponent(ctx context.Context, id in
 
 	return nil
 }
+
+func (i *InfraComponentRepoImpl) CreateInfraComponent(ctx context.Context, component model.InfraComponent) (*model.InfraComponent, error) {
+	statement := `
+		INSERT INTO infra_components (
+			hostname, dns, description, public_internet, class, ipaddress, 
+			subnet, site, it_component_type, request_type, appid, vlan, 
+			app_name, app_owner, level, ci_owners, im_cm, status, 
+			created_at, create_by
+		) VALUES (
+			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 
+			$11, $12, $13, $14, $15, $16, $17, $18, $19, $20
+		) RETURNING id, created_at`
+
+	var returnedID int
+	var returnedCreatedAt string
+
+	err := i.sql.Db.QueryRowContext(ctx, statement,
+		component.Hostname, component.DNS, component.Description, component.PublicInternet,
+		component.Class, component.IPAddress, component.Subnet, component.Site,
+		component.ITComponentType, component.RequestType, component.AppID, component.VLAN,
+		component.AppName, component.AppOwner, component.Level, component.CIOwners,
+		component.IMCM, component.Status, component.CreatedAt, component.CreateBy,
+	).Scan(&returnedID, &returnedCreatedAt)
+
+	if err != nil {
+		log.Error("Error creating infra component:", err.Error())
+		return nil, err
+	}
+
+	// Set returned values to the component
+	component.ID = returnedID
+	component.CreatedAt = returnedCreatedAt
+
+	return &component, nil
+}

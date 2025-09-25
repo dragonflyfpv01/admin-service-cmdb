@@ -32,6 +32,9 @@ func (api *API) SetupRouter() {
 	api.Echo.GET("/admin/infra-components/all", api.InfraComponentHandler.GetAllInfraComponents, middleware.JWTMiddleware())
 	api.Echo.GET("/admin/infra-components/pending", api.InfraComponentHandler.GetPendingInfraComponents, middleware.JWTMiddleware())
 
+	// Route tạo mới infra components
+	api.Echo.POST("/admin/infra-components", api.InfraComponentHandler.CreateInfraComponent, middleware.JWTMiddleware())
+
 	// Route cập nhật status infra components - chỉ admin mới được sửa
 	api.Echo.PUT("/admin/infra-components/status", api.InfraComponentHandler.UpdateInfraComponentStatus, middleware.JWTMiddleware())
 

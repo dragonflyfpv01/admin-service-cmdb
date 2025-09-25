@@ -6,11 +6,13 @@ import (
 
 	"sllpklls/admin-service/model"
 
+	"os"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
-const SECRET_KEY = "hoangthaifc01"
+var SECRET_KEY = os.Getenv("SECRET_KEY")
 
 // func JWTMiddleware
 func GenToken(user model.User) (string, error) {

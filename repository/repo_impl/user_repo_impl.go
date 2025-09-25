@@ -68,3 +68,16 @@ func (u *UserRepoImpl) GetAllUsers(context context.Context) ([]model.UserList, e
 
 	return users, nil
 }
+
+func (u *UserRepoImpl) GetUserByUserId(context context.Context, userId string) (model.User, error) {
+	var user model.User
+	statement := `SELECT user_id, email, password, role, full_name, created_at, updated_at FROM users_admin WHERE user_id = $1`
+
+	err := u.sql.Db.GetContext(context, &user, statement, userId)
+	if err != nil {
+		log.Error("Error fetching user by userId: ", err.Error())
+		return user, err
+	}
+
+	return user, nil
+}
